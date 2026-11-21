@@ -24,5 +24,5 @@ Steps:
 
 Constraints:
 - Timestamps in `mm:ss` form.
-- If the file is very long, transcribe in chunks is not supported; rely on the single transcript and summarize.
+- If the file is very long (> ~30 min), transcribe in chunks: call transcribe with start_seconds/end_seconds windows (e.g. 600s) and merge the segments. Timestamps are absolute.
 - Prefer the user's requested format; default to Markdown.

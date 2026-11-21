@@ -7,7 +7,7 @@ so an agent (e.g. Claude Code) can write reports in Markdown, LaTeX, HTML, etc.
 
 - `get_media_info(file_path)` — duration, codecs, streams, size.
 - `extract_audio(file_path, output_path?)` — extract audio to 16kHz mono WAV.
-- `transcribe(file_path, model_size?, language?)` — timestamped transcript via faster-whisper.
+- `transcribe(file_path, model_size?, language?, start_seconds?, end_seconds?, vad_filter?)` — timestamped transcript via faster-whisper. Supports chunking for long files.
 
 ## Run with uvx
 
@@ -38,6 +38,19 @@ Add to your MCP config (e.g. `~/.claude.json` or project `.mcp.json`):
 
 Then ask Claude Code: "Write a summary report from /path/to/video.mp4 in Markdown."
 The agent will call `get_media_info` and `transcribe`, then write the report.
+
+## Large files
+
+For files of hundreds of MB (hours of audio), transcribe in chunks to keep memory
+and context small:
+
+```
+transcribe(path, start_seconds=0, end_seconds=600)
+transcribe(path, start_seconds=600, end_seconds=1200)
+...
+```
+
+Segment timestamps are returned in absolute seconds. VAD filtering is on by default.
 
 ## Environment variables
 

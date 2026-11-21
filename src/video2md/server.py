@@ -50,6 +50,9 @@ def transcribe(
     file_path: str,
     model_size: str = "base",
     language: str | None = None,
+    start_seconds: float | None = None,
+    end_seconds: float | None = None,
+    vad_filter: bool = True,
 ) -> dict:
     """Transcribe speech in a video or audio file into timestamped segments.
 
@@ -57,12 +60,26 @@ def transcribe(
     (default 'base', ~150MB). Set language to an ISO-639-1 code to skip
     auto-detection (e.g. 'en', 'tr').
 
+    For long files, process in chunks by passing start_seconds/end_seconds
+    (seconds). Segment timestamps are returned in absolute seconds. VAD
+    filtering is on by default to skip silence and speed things up.
+
     Args:
         file_path: Path to a video or audio file.
         model_size: Whisper model size: tiny, base, small, medium, large-v3.
         language: Optional ISO language code. Auto-detected if omitted.
+        start_seconds: Start of the chunk to transcribe (default: 0).
+        end_seconds: End of the chunk to transcribe (default: end of file).
+        vad_filter: Enable voice-activity detection to skip silence (default True).
     """
-    return _transcribe(file_path, model_size=model_size, language=language)
+    return _transcribe(
+        file_path,
+        model_size=model_size,
+        language=language,
+        start_seconds=start_seconds,
+        end_seconds=end_seconds,
+        vad_filter=vad_filter,
+    )
 
 
 def main() -> None:

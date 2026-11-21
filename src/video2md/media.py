@@ -108,8 +108,17 @@ def _int_or_none(v: Any) -> int | None:
         return None
 
 
-def extract_audio(input_path: str, output_path: str | None = None) -> str:
-    """Extract the first audio stream to a WAV file. Returns output path."""
+def extract_audio(
+    input_path: str,
+    output_path: str | None = None,
+    start: float | None = None,
+    duration: float | None = None,
+) -> str:
+    """Extract the first audio stream to a 16kHz mono WAV file.
+
+    If ``start``/``duration`` are given, only that slice is extracted, which keeps
+    memory low for very long files.
+    """
     ffmpeg = _which("ffmpeg")
     src = Path(input_path).expanduser().resolve()
     if not src.is_file():
@@ -117,16 +126,23 @@ def extract_audio(input_path: str, output_path: str | None = None) -> str:
 
     if output_path is None:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        out = CACHE_DIR / (src.stem + ".wav")
+        suffix = ""
+        if start is not None:
+            suffix = f"_{int(start)}"
+        if duration is not None:
+            suffix += f"_{int(duration)}"
+        out = CACHE_DIR / (src.stem + suffix + ".wav")
     else:
         out = Path(output_path).expanduser().resolve()
         out.parent.mkdir(parents=True, exist_ok=True)
 
-    cmd = [
-        ffmpeg,
-        "-y",
-        "-i",
-        str(src),
+    cmd = [ffmpeg, "-y"]
+    if start is not None and start > 0:
+        cmd += ["-ss", str(start)]
+    cmd += ["-i", str(src)]
+    if duration is not None and duration > 0:
+        cmd += ["-t", str(duration)]
+    cmd += [
         "-vn",
         "-acodec",
         "pcm_s16le",

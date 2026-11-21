@@ -28,6 +28,7 @@ def _load_audio_as_float32(path: str) -> "np.ndarray":
         data = data.reshape(-1, n_channels).mean(axis=1)
     return data
 
+
 DEFAULT_MODEL = os.environ.get("VIDEO2MD_MODEL", "base")
 DEFAULT_DEVICE = os.environ.get("VIDEO2MD_DEVICE", "auto")
 DEFAULT_COMPUTE = os.environ.get("VIDEO2MD_COMPUTE_TYPE", "auto")
@@ -51,17 +52,9 @@ def _resolve_device(device: str) -> str:
             return "cuda"
     except Exception:
         pass
-    # Prefer Apple Metal on macOS arm64.
     import platform
-    if platform.system() == "Darwin" and platform.machine() in ("arm64", "aarch64"):
-        try:
-            import ctranslate2
 
-            if hasattr(ctranslate2, "get_mps_device_count") and ctranslate2.get_mps_device_count() > 0:
-                return "mps"
-        except Exception:
-            pass
-        # ctranslate2 older versions lack the counter; try mps anyway.
+    if platform.system() == "Darwin" and platform.machine() in ("arm64", "aarch64"):
         return "mps"
     return "cpu"
 
@@ -72,8 +65,15 @@ def transcribe(
     language: str | None = None,
     device: str | None = None,
     compute_type: str | None = None,
+    start_seconds: float | None = None,
+    end_seconds: float | None = None,
+    vad_filter: bool = True,
 ) -> dict[str, Any]:
-    """Transcribe a media file. Extracts audio first if needed."""
+    """Transcribe a media file (or a slice of it).
+
+    For long files, call repeatedly with ``start_seconds``/``end_seconds`` to
+    process in chunks; segment timestamps are returned in absolute seconds.
+    """
     model_size = model_size or DEFAULT_MODEL
     device = _resolve_device(device or DEFAULT_DEVICE)
     compute_type = _resolve_compute_type(device, compute_type or DEFAULT_COMPUTE)
@@ -82,14 +82,31 @@ def transcribe(
     if not info.get("has_audio"):
         raise ValueError(f"File has no audio stream: {file_path}")
 
-    audio_path = extract_audio(file_path)
+    total_duration = info.get("duration_seconds")
+
+    offset = float(start_seconds) if start_seconds is not None else 0.0
+    if end_seconds is not None:
+        duration = float(end_seconds) - offset
+        if duration <= 0:
+            raise ValueError("end_seconds must be greater than start_seconds")
+    else:
+        duration = None
+        if total_duration is not None:
+            duration = float(total_duration) - offset
+            if duration <= 0:
+                raise ValueError("start_seconds is beyond file duration")
+
+    audio_path = extract_audio(
+        file_path, start=offset if offset > 0 else None, duration=duration
+    )
+
     audio_array = _load_audio_as_float32(audio_path)
 
     from faster_whisper import WhisperModel
 
     model = WhisperModel(model_size, device=device, compute_type=compute_type)
 
-    kwargs: dict[str, Any] = {"beam_size": 5}
+    kwargs: dict[str, Any] = {"beam_size": 5, "vad_filter": vad_filter}
     if language:
         kwargs["language"] = language
 
@@ -101,13 +118,15 @@ def transcribe(
         text = (seg.text or "").strip()
         segments.append(
             {
-                "start": round(float(seg.start), 3),
-                "end": round(float(seg.end), 3),
+                "start": round(float(seg.start) + offset, 3),
+                "end": round(float(seg.end) + offset, 3),
                 "text": text,
             }
         )
         if text:
             full_text_parts.append(text)
+
+    chunk_duration = getattr(whisper_info, "duration", None)
 
     return {
         "file_path": str(Path(file_path).expanduser().resolve()),
@@ -117,7 +136,9 @@ def transcribe(
         "compute_type": compute_type,
         "language": getattr(whisper_info, "language", None),
         "language_probability": getattr(whisper_info, "language_probability", None),
-        "duration_seconds": getattr(whisper_info, "duration", None) or info.get("duration_seconds"),
+        "start_seconds": offset,
+        "end_seconds": offset + (chunk_duration if chunk_duration is not None else (duration or 0)),
+        "duration_seconds": chunk_duration,
         "segment_count": len(segments),
         "full_text": " ".join(full_text_parts),
         "segments": segments,
