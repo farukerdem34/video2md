@@ -15,6 +15,11 @@ dependencies = [
     "faster-whisper>=1.2",
 ]
 
+[project.optional-dependencies]
+mlx = ["mlx-whisper>=0.4"]
+openai = ["openai>=1.0"]
+whispercpp = ["pywhispercpp>=1.0"]
+
 [dependency-groups]
 dev = [
     "pytest>=8",
