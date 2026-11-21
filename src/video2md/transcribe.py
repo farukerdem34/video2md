@@ -155,28 +155,30 @@ def transcribe(
         duration_total = float(end_seconds) - offset0
         if duration_total <= 0:
             raise ValueError("end_seconds must be greater than start_seconds")
-        chunks = [(offset0, duration_total)]
     elif manual:
-        # start only
         if total_duration is None:
             raise ValueError("Cannot determine duration for chunking")
         duration_total = float(total_duration) - offset0
         if duration_total <= 0:
             raise ValueError("start_seconds is beyond file duration")
-        chunks = [(offset0, duration_total)]
     else:
-        if total_duration is None:
-            chunks = [(0.0, None)]
-        elif total_duration > _AUTO_CHUNK_THRESHOLD:
-            chunk_seconds = _DEFAULT_CHUNK_SECONDS
-            chunks = []
-            cur = 0.0
-            while cur < total_duration:
-                dur = min(chunk_seconds, total_duration - cur)
-                chunks.append((cur, dur))
-                cur += dur
-        else:
-            chunks = [(0.0, total_duration)]
+        offset0 = 0.0
+        duration_total = total_duration
+
+    # Auto-chunk large requested ranges (manual or not).
+    if duration_total is None:
+        chunks = [(offset0, None)]
+    elif duration_total > _AUTO_CHUNK_THRESHOLD:
+        chunk_seconds = _DEFAULT_CHUNK_SECONDS
+        chunks = []
+        cur = offset0
+        end_limit = offset0 + duration_total
+        while cur < end_limit:
+            dur = min(chunk_seconds, end_limit - cur)
+            chunks.append((cur, dur))
+            cur += dur
+    else:
+        chunks = [(offset0, duration_total)]
 
     # Parallel execution
     import concurrent.futures
