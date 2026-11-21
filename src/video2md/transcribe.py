@@ -215,14 +215,12 @@ def transcribe(
             detected_lang = r["language"]
             lang_prob = r["language_probability"]
 
-    # Dedup boundary overlaps: drop segments whose start < previous chunk's last end
+    # Drop segments that start before the previous kept segment ends (chunk overlap).
     deduped = []
     last_end = -1.0
     for seg in sorted(all_segments, key=lambda s: (s["start"], s["end"])):
-        if seg["start"] < last_end - 1e-6 and deduped:
-            # likely duplicate boundary; skip if identical text to last
-            if seg["text"] == deduped[-1]["text"]:
-                continue
+        if deduped and seg["start"] < last_end - 1e-6:
+            continue
         deduped.append(seg)
         last_end = max(last_end, seg["end"])
     all_segments = deduped
