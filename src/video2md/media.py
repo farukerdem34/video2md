@@ -25,6 +25,8 @@ def get_media_info(file_path: str) -> dict[str, Any]:
     path = Path(file_path).expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(f"File not found: {path}")
+    if path.name.startswith("-"):
+        raise ValueError(f"Unsafe filename (starts with '-'): {path.name}")
 
     cmd = [
         ffprobe,
@@ -125,6 +127,8 @@ def extract_audio(
     src = Path(input_path).expanduser().resolve()
     if not src.is_file():
         raise FileNotFoundError(f"File not found: {src}")
+    if src.name.startswith("-"):
+        raise ValueError(f"Unsafe filename (starts with '-'): {src.name}")
 
     if output_path is None:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
