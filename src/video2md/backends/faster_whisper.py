@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import platform
+import threading
 import wave
 from pathlib import Path
 from typing import Any
@@ -68,6 +69,7 @@ class FasterWhisperBackend:
         self.device = _resolve_device(device)
         self.compute_type = _resolve_compute_type(self.device, compute_type)
         self._model = None
+        self._model_lock = threading.Lock()
 
     def is_available(self) -> bool:
         try:
@@ -78,11 +80,12 @@ class FasterWhisperBackend:
             return False
 
     def _get_model(self):
-        if self._model is None:
-            from faster_whisper import WhisperModel
+        with self._model_lock:
+            if self._model is None:
+                from faster_whisper import WhisperModel
 
-            self._model = WhisperModel(self.model_size, device=self.device, compute_type=self.compute_type)
-        return self._model
+                self._model = WhisperModel(self.model_size, device=self.device, compute_type=self.compute_type)
+            return self._model
 
     def transcribe(
         self,
