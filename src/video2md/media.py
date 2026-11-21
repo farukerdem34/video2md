@@ -36,7 +36,10 @@ def get_media_info(file_path: str) -> dict[str, Any]:
         "-show_streams",
         str(path),
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError("ffprobe timed out") from e
     if proc.returncode != 0:
         raise RuntimeError(f"ffprobe failed: {proc.stderr.strip()}")
 
@@ -152,7 +155,10 @@ def extract_audio(
         "1",
         str(out),
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError("ffmpeg timed out") from e
     if proc.returncode != 0:
         raise RuntimeError(f"ffmpeg audio extraction failed: {proc.stderr.strip()}")
     if not out.is_file():
