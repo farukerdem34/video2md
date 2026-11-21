@@ -35,11 +35,20 @@ class OpenAIBackend:
 
         segments = []
         for seg in getattr(resp, "segments", []) or []:
+            start = getattr(seg, "start", None)
+            if start is None and isinstance(seg, dict):
+                start = seg.get("start")
+            end = getattr(seg, "end", None)
+            if end is None and isinstance(seg, dict):
+                end = seg.get("end")
+            text = getattr(seg, "text", None)
+            if text is None and isinstance(seg, dict):
+                text = seg.get("text")
             segments.append(
                 Segment(
-                    start=float(seg.get("start", seg.start) if hasattr(seg, "start") else seg["start"]),
-                    end=float(seg.get("end", seg.end) if hasattr(seg, "end") else seg["end"]),
-                    text=(seg.get("text", seg.text) if hasattr(seg, "text") else seg["text"]).strip(),
+                    start=float(start or 0.0),
+                    end=float(end or 0.0),
+                    text=(text or "").strip(),
                 )
             )
         if not segments and getattr(resp, "text", None):
