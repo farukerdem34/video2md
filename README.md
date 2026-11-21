@@ -10,15 +10,24 @@ so an agent (e.g. Claude Code) can write reports in Markdown, LaTeX, HTML, etc.
 - `transcribe(...)` — timestamped transcript. Backends: mlx-whisper (macOS arm64), faster-whisper (cross-platform), openai (cloud). Auto-chunks files > 10 min. Raw Whisper params exposed.
 - `list_backends()` — available backends.
 - `cache_clear()` — clear transcript cache.
+- `get_report_template(format)` — Markdown/LaTeX report skeleton (`markdown`/`md`, `latex`/`tex`).
 - `submit_transcription(...)` / `get_job_status(job_id)` / `cancel_job(job_id)` — async jobs for long files.
 
 ## Run with uvx
+
+From a local checkout:
 
 ```bash
 uvx --from . video2md
 ```
 
-Or after publishing:
+Without cloning (from GitHub, before/without PyPI publishing):
+
+```bash
+uvx --from git+https://github.com/<OWNER>/video2md video2md
+```
+
+After publishing to PyPI:
 
 ```bash
 uvx video2md
@@ -26,7 +35,9 @@ uvx video2md
 
 ## Claude Code integration
 
-Add to your MCP config (e.g. `~/.claude.json` or project `.mcp.json`):
+Add to your MCP config (e.g. `~/.claude.json` or project `.mcp.json`).
+
+Local checkout:
 
 ```json
 {
@@ -34,6 +45,32 @@ Add to your MCP config (e.g. `~/.claude.json` or project `.mcp.json`):
     "video2md": {
       "command": "uvx",
       "args": ["--from", "/path/to/video2md", "video2md"]
+    }
+  }
+}
+```
+
+Without cloning (GitHub source):
+
+```json
+{
+  "mcpServers": {
+    "video2md": {
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/<OWNER>/video2md", "video2md"]
+    }
+  }
+}
+```
+
+Published package:
+
+```json
+{
+  "mcpServers": {
+    "video2md": {
+      "command": "uvx",
+      "args": ["video2md"]
     }
   }
 }
