@@ -58,8 +58,16 @@ def create_backend(
         else:
             requested = "faster-whisper"
 
-    # fallback chain
+    # fallback chain: always end with the platform default so an unavailable
+    # requested backend (e.g. openai without a key) still falls back.
+    default = "faster-whisper"
+    if platform.system() == "Darwin" and platform.machine() in ("arm64", "aarch64"):
+        default = "mlx-whisper"
     chain = [requested] + [b for b in available_backends() if b != requested]
+    if default not in chain:
+        chain.append(default)
+    if "faster-whisper" not in chain:
+        chain.append("faster-whisper")
 
     last_err: Exception | None = None
     for candidate in chain:
