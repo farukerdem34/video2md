@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
-import os
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -126,12 +125,13 @@ def extract_audio(
 
     if output_path is None:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        src_hash = hashlib.sha256(str(src).encode()).hexdigest()[:12]
         suffix = ""
         if start is not None:
             suffix = f"_{int(start)}"
         if duration is not None:
             suffix += f"_{int(duration)}"
-        out = CACHE_DIR / (src.stem + suffix + ".wav")
+        out = CACHE_DIR / f"{src.stem}_{src_hash}{suffix}.wav"
     else:
         out = Path(output_path).expanduser().resolve()
         out.parent.mkdir(parents=True, exist_ok=True)
