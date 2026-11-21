@@ -45,7 +45,10 @@ def load(key: str) -> dict[str, Any] | None:
 
 def save(key: str, value: dict[str, Any]) -> None:
     TRANSCRIPT_DIR.mkdir(parents=True, exist_ok=True)
-    (TRANSCRIPT_DIR / f"{key}.json").write_text(json.dumps(value))
+    target = TRANSCRIPT_DIR / f"{key}.json"
+    tmp = target.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(value))
+    os.replace(tmp, target)
 
 
 def clear() -> int:
