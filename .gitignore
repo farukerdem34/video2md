@@ -17,4 +17,4 @@ __pycache__/
 # OS
 .DS_Store
 /sample_summary.tex
-/summary.tex
+*.tex
