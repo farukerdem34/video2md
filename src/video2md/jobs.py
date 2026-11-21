@@ -29,14 +29,16 @@ def _run_job(job_id: str, kwargs: dict[str, Any]) -> None:
     try:
         result = transcribe(**kwargs)
         with _LOCK:
-            JOBS[job_id]["state"] = "done"
-            JOBS[job_id]["result"] = result
-            JOBS[job_id]["finished_at"] = time.time()
+            if JOBS[job_id].get("state") != "cancelled":
+                JOBS[job_id]["state"] = "done"
+                JOBS[job_id]["result"] = result
+                JOBS[job_id]["finished_at"] = time.time()
     except Exception as e:
         with _LOCK:
-            JOBS[job_id]["state"] = "failed"
-            JOBS[job_id]["error"] = str(e)
-            JOBS[job_id]["finished_at"] = time.time()
+            if JOBS[job_id].get("state") != "cancelled":
+                JOBS[job_id]["state"] = "failed"
+                JOBS[job_id]["error"] = str(e)
+                JOBS[job_id]["finished_at"] = time.time()
 
 
 def submit(**kwargs: Any) -> str:
