@@ -12,28 +12,23 @@ CACHE_DIR = Path(os.environ.get("VIDEO2MD_CACHE_DIR", str(Path.home() / ".cache"
 TRANSCRIPT_DIR = CACHE_DIR / "transcripts"
 
 
-def _file_fingerprint(path: str, full: bool = False) -> str:
+def _file_fingerprint(path: str) -> str:
+    # Hash the whole file. Transcription is far slower than hashing, so the
+    # cost is negligible and it avoids collisions between files that only
+    # differ in the middle.
     p = Path(path)
     size = p.stat().st_size
     h = hashlib.sha256()
     h.update(str(size).encode())
-    if full:
-        with open(path, "rb") as f:
-            for chunk in iter(lambda: f.read(1 << 20), b""):
-                h.update(chunk)
-    else:
-        # hash first + last 1MB + size
-        with open(path, "rb") as f:
-            h.update(f.read(1 << 20))
-            if size > (1 << 20):
-                f.seek(max(0, size - (1 << 20)))
-                h.update(f.read(1 << 20))
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
     return h.hexdigest()[:16]
 
 
-def cache_key(file_path: str, backend: str, model: str, language, params: Any, full_hash: bool = False) -> str:
+def cache_key(file_path: str, backend: str, model: str, language, params: Any) -> str:
     params_str = repr(params)
-    fp = _file_fingerprint(file_path, full=full_hash)
+    fp = _file_fingerprint(file_path)
     raw = f"{fp}|{backend}|{model}|{language}|{params_str}"
     return hashlib.sha256(raw.encode()).hexdigest()[:24]
 
