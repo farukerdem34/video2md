@@ -12,6 +12,7 @@ from .jobs import status as _job_status
 from .jobs import submit as _submit_job
 from .media import extract_audio as _extract_audio
 from .media import get_media_info as _get_media_info
+from .templates import get_template as _get_template
 from .transcribe import transcribe as _transcribe
 
 mcp = MCPServer(
@@ -22,7 +23,8 @@ mcp = MCPServer(
         "Use get_media_info first, then transcribe to obtain a timestamped transcript. "
         "For long files, transcribe auto-chunks; or pass start_seconds/end_seconds. "
         "Backends: mlx-whisper (macOS arm64), faster-whisper (cross-platform CPU), "
-        "openai (cloud). Transcription runs locally by default."
+        "openai (cloud). Transcription runs locally by default. "
+        "Use get_report_template(format) to fetch a Markdown or LaTeX report skeleton."
     ),
 )
 
@@ -61,6 +63,18 @@ def list_backends() -> dict:
 def cache_clear() -> dict:
     """Clear the transcript cache. Returns number of files removed."""
     return {"removed": _cache_clear()}
+
+
+@mcp.tool()
+def get_report_template(format: str = "markdown") -> str:
+    """Return a starter template for a report in the requested format.
+
+    Args:
+        format: 'markdown' (or 'md') or 'latex' (or 'tex').
+
+    The template contains {{PLACEHOLDER}} tokens to replace with report content.
+    """
+    return _get_template(format)
 
 
 @mcp.tool()

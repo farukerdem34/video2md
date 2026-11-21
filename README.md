@@ -42,6 +42,9 @@ Add to your MCP config (e.g. `~/.claude.json` or project `.mcp.json`):
 Then ask Claude Code: "Write a summary report from /path/to/video.mp4 in Markdown."
 The agent will call `get_media_info` and `transcribe`, then write the report.
 
+Report skeletons are available via the `get_report_template(format)` tool
+(`markdown`/`md` or `latex`/`tex`) and as files under `templates/`.
+
 ## Large files
 
 For files of hundreds of MB (hours of audio), transcribe in chunks to keep memory

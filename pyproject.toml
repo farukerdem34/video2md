@@ -30,6 +30,10 @@ video2md = "video2md.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/video2md"]
+artifacts = ["src/video2md/templates/*"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/video2md", "templates", "prompts"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
