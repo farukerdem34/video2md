@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import platform
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from .base import TranscriptionBackend
 from .faster_whisper import FasterWhisperBackend
@@ -18,8 +21,8 @@ def available_backends() -> list[str]:
 
         if MlxWhisperBackend().is_available():
             names.insert(0, "mlx-whisper")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("mlx-whisper unavailable: %s", e)
     # openai
     if os.environ.get("OPENAI_API_KEY"):
         names.append("openai")
@@ -28,8 +31,8 @@ def available_backends() -> list[str]:
         import pywhispercpp  # noqa: F401
 
         names.append("whisper-cpp")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("whisper-cpp unavailable: %s", e)
     return names
 
 
@@ -68,6 +71,7 @@ def create_backend(
                 return backend
         except Exception as e:
             last_err = e
+            logger.debug("backend %s failed: %s", candidate, e)
             continue
     raise RuntimeError(f"No transcription backend available: {last_err}")
 
