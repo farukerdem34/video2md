@@ -1,0 +1,113 @@
+% video2md report template (LaTeX)
+% Replace {{PLACEHOLDERS}} with content. Remove instructional comments as needed.
+% NOTE: Escape LaTeX special characters in substituted text:
+%   \ & % $ # _ { } ~ ^  ->  \textbackslash{} \& \% \$ \# \_ \{ \} \textasciitilde{} \textasciicircum{}
+% Choose the babel language to match the transcript language (e.g. turkish, english, german).
+\documentclass[11pt,a4paper]{article}
+
+% --- Encoding & language ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+% --- Layout ---
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small {{SHORT_TITLE}}}
+\fancyhead[R]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Typography & links ---
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, pdfauthor={video2md}}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+
+% --- Misc ---
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small, breaklines=true, columns=fullflexible}
+
+\title{{{TITLE}}}
+\author{{{AUTHOR}}}
+\date{{{DATE}}}
+
+\begin{document}
+\maketitle
+
+% --- Metadata block ---
+\begin{center}
+\begin{tabular}{rl}
+  \textbf{Source:} & \texttt{{{SOURCE_FILE}}} \\
+  \textbf{Duration:} & {{DURATION}} ({{DURATION_SECONDS}}\,s) \\
+  \textbf{Language:} & {{LANGUAGE}} \\
+  \textbf{Generated:} & {{GENERATED_DATE}} \\
+\end{tabular}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% --- Executive summary ---
+\section*{Executive summary}
+\addcontentsline{toc}{section}{Executive summary}
+{{EXECUTIVE_SUMMARY}}
+
+% --- Body sections (repeat as needed) ---
+\section{{{SECTION_1_TITLE}}}
+{{SECTION_1_BODY}}
+
+\subsection{{{SUBSECTION_TITLE}}}
+{{SUBSECTION_BODY}}
+
+\section{{{SECTION_2_TITLE}}}
+{{SECTION_2_BODY}}
+
+% --- Key takeaways ---
+\section{Key takeaways}
+\begin{enumerate}
+  \item {{TAKEAWAY_1}}
+  \item {{TAKEAWAY_2}}
+  \item {{TAKEAWAY_3}}
+\end{enumerate}
+
+% --- Action items ---
+\section{Action items}
+\begin{longtable}{clll}
+  \toprule
+  \# & Action & Owner & Due \\
+  \midrule
+  \endhead
+  1 & {{ACTION_1}} & {{OWNER_1}} & {{DUE_1}} \\
+  2 & {{ACTION_2}} & {{OWNER_2}} & {{DUE_2}} \\
+  \bottomrule
+\end{longtable}
+
+% --- Notable quotes ---
+\section{Notable quotes}
+\begin{quote}
+  \textit{``{{QUOTE_TEXT}}''} \\
+  \hfill --- {{SPEAKER}}, {{TIMESTAMP}}
+\end{quote}
+
+% --- Appendix: transcript ---
+\appendix
+\section{Full transcript}
+\begin{longtable}{p{1.6cm}p{14cm}}
+  \toprule
+  Time & Text \\
+  \midrule
+  \endhead
+  {{TIMESTAMP}} & {{TEXT}} \\
+  \bottomrule
+\end{longtable}
+
+\end{document}
