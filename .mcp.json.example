@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "video2md": {
+      "command": "uvx",
+      "args": ["--from", ".", "video2md"]
+    }
+  }
+}

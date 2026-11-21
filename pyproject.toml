@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "video2md"
+version = "0.1.0"
+description = "MCP server that turns video/audio files into transcripts and metadata for report generation."
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "video2md" }]
+dependencies = [
+    "mcp>=2.3,<3",
+    "faster-whisper>=1.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[project.scripts]
+video2md = "video2md.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/video2md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
