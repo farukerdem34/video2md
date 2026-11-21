@@ -166,9 +166,4 @@ def extract_audio(
     return str(out)
 
 
-def is_audio_file(info: dict[str, Any]) -> bool:
-    return bool(info.get("has_audio")) and not info.get("has_video")
 
-
-def is_video_file(info: dict[str, Any]) -> bool:
-    return bool(info.get("has_video"))

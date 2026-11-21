@@ -10,15 +10,6 @@ from .base import TranscriptionBackend
 from .faster_whisper import FasterWhisperBackend
 
 
-def _cpu_count() -> int:
-    try:
-        import os as _os
-
-        return _os.cpu_count() or 4
-    except Exception:
-        return 4
-
-
 def available_backends() -> list[str]:
     names = ["faster-whisper"]
     # mlx

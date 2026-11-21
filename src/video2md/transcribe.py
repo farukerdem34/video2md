@@ -15,10 +15,6 @@ _AUTO_CHUNK_THRESHOLD = float(os.environ.get("VIDEO2MD_AUTO_CHUNK_THRESHOLD", "6
 _DEFAULT_CHUNK_SECONDS = int(os.environ.get("VIDEO2MD_CHUNK_SECONDS", "300"))
 
 
-def _build_params(**kw) -> RawWhisperParams:
-    return RawWhisperParams(**kw)
-
-
 def _run_one_chunk(
     file_path: str,
     backend,
