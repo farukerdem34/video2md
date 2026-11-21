@@ -7,7 +7,10 @@ so an agent (e.g. Claude Code) can write reports in Markdown, LaTeX, HTML, etc.
 
 - `get_media_info(file_path)` — duration, codecs, streams, size.
 - `extract_audio(file_path, output_path?)` — extract audio to 16kHz mono WAV.
-- `transcribe(file_path, model_size?, language?, start_seconds?, end_seconds?, vad_filter?)` — timestamped transcript via faster-whisper. Supports chunking for long files.
+- `transcribe(...)` — timestamped transcript. Backends: mlx-whisper (macOS arm64), faster-whisper (cross-platform), openai (cloud). Auto-chunks files > 10 min. Raw Whisper params exposed.
+- `list_backends()` — available backends.
+- `cache_clear()` — clear transcript cache.
+- `submit_transcription(...)` / `get_job_status(job_id)` / `cancel_job(job_id)` — async jobs for long files.
 
 ## Run with uvx
 
@@ -54,9 +57,14 @@ Segment timestamps are returned in absolute seconds. VAD filtering is on by defa
 
 ## Environment variables
 
+- `VIDEO2MD_BACKEND` — `auto`/`mlx-whisper`/`faster-whisper`/`whisper-cpp`/`openai` (default: `auto`).
 - `VIDEO2MD_MODEL` — default whisper model size (default: `base`).
-- `VIDEO2MD_DEVICE` — `auto`/`cpu`/`cuda` (default: `auto`).
+- `VIDEO2MD_DEVICE` — `auto`/`cpu`/`cuda`/`mps` (default: `auto`).
 - `VIDEO2MD_COMPUTE_TYPE` — compute type (default: `auto`).
+- `VIDEO2MD_WORKERS` — parallel workers (default: cpu_count-1).
+- `VIDEO2MD_CHUNK_SECONDS` — chunk size for auto-chunking (default: 300).
+- `VIDEO2MD_CACHE_DIR` — cache location.
+- `OPENAI_API_KEY` — for the openai backend.
 
 ## Development
 

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
-import os
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +25,8 @@ def get_media_info(file_path: str) -> dict[str, Any]:
     path = Path(file_path).expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(f"File not found: {path}")
+    if path.name.startswith("-"):
+        raise ValueError(f"Unsafe filename (starts with '-'): {path.name}")
 
     cmd = [
         ffprobe,
@@ -37,7 +38,10 @@ def get_media_info(file_path: str) -> dict[str, Any]:
         "-show_streams",
         str(path),
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError("ffprobe timed out") from e
     if proc.returncode != 0:
         raise RuntimeError(f"ffprobe failed: {proc.stderr.strip()}")
 
@@ -123,15 +127,18 @@ def extract_audio(
     src = Path(input_path).expanduser().resolve()
     if not src.is_file():
         raise FileNotFoundError(f"File not found: {src}")
+    if src.name.startswith("-"):
+        raise ValueError(f"Unsafe filename (starts with '-'): {src.name}")
 
     if output_path is None:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        src_hash = hashlib.sha256(str(src).encode()).hexdigest()[:12]
         suffix = ""
         if start is not None:
             suffix = f"_{int(start)}"
         if duration is not None:
             suffix += f"_{int(duration)}"
-        out = CACHE_DIR / (src.stem + suffix + ".wav")
+        out = CACHE_DIR / f"{src.stem}_{src_hash}{suffix}.wav"
     else:
         out = Path(output_path).expanduser().resolve()
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -152,7 +159,10 @@ def extract_audio(
         "1",
         str(out),
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError("ffmpeg timed out") from e
     if proc.returncode != 0:
         raise RuntimeError(f"ffmpeg audio extraction failed: {proc.stderr.strip()}")
     if not out.is_file():
@@ -160,9 +170,4 @@ def extract_audio(
     return str(out)
 
 
-def is_audio_file(info: dict[str, Any]) -> bool:
-    return bool(info.get("has_audio")) and not info.get("has_video")
 
-
-def is_video_file(info: dict[str, Any]) -> bool:
-    return bool(info.get("has_video"))
