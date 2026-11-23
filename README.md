@@ -33,6 +33,31 @@ After publishing to PyPI:
 uvx video2md
 ```
 
+## Claude Code plugin
+
+This repository is also a Claude Code plugin: it bundles the `video2md` MCP server,
+reporter personas (skills/agents), and the `/video2md:latex` and `/video2md:markdown`
+commands.
+
+Load it for a session:
+
+```bash
+claude --plugin-dir /path/to/video2md
+```
+
+Or install from a marketplace once published:
+
+```text
+/plugin install video2md --marketplace farukerdem34/video2md
+```
+
+Then run:
+
+```text
+/video2md:latex input.mp4
+/video2md:markdown input.webm
+```
+
 ## Claude Code integration
 
 Add to your MCP config (e.g. `~/.claude.json` or project `.mcp.json`).

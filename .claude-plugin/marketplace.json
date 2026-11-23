@@ -1,0 +1,14 @@
+{
+  "name": "video2md-marketplace",
+  "description": "Marketplace for the video2md Claude Code plugin",
+  "owner": {
+    "name": "video2md"
+  },
+  "plugins": [
+    {
+      "name": "video2md",
+      "source": "./",
+      "description": "Turn video/audio files into structured Markdown or LaTeX reports. Bundles the video2md MCP server, reporter personas, and /video2md:latex & /video2md:markdown commands."
+    }
+  ]
+}

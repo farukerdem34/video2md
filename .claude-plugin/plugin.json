@@ -1,0 +1,10 @@
+{
+  "name": "video2md",
+  "description": "Turn video/audio files into structured Markdown or LaTeX reports. Bundles the video2md MCP server, reporter personas (skills/agents), and /video2md:latex & /video2md:markdown commands.",
+  "version": "0.2.0",
+  "license": "MIT",
+  "author": {
+    "name": "video2md"
+  },
+  "keywords": ["video", "transcription", "report", "latex", "markdown", "mcp"]
+}
