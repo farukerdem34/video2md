@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "video2md": {
+        "type": "local",
+        "command": ["uvx", "--from", ".", "video2md"]
+      }
+    }
+  }
+}
