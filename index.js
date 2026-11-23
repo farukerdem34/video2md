@@ -30,7 +30,7 @@ export default Plugin.define({
     // MCP server
     try {
       await ctx.mcp.transform((editor) => {
-        editor.set("video2md", { type: "local", command: ["uvx", "--from", "git+https://github.com/farukerdem34/video2md", "video2md"] })
+        editor.set("video2md", { type: "local", command: ["uvx", "--from", "git+https://github.com/farukerdem34/video2md", "video2md"], protocol: "legacy" })
       })
     } catch (e) { console.error("video2md mcp register failed", e) }
 

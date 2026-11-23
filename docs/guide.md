@@ -95,7 +95,8 @@ Published package:
     "servers": {
       "video2md": {
         "type": "local",
-        "command": ["uvx", "--from", ".", "video2md"]
+        "command": ["uvx", "--from", ".", "video2md"],
+      "protocol": "legacy"
       }
     }
   }

@@ -21,3 +21,4 @@ __pycache__/
 /sample_summary.tex
 *.tex
 node_modules/
+package-lock.json
