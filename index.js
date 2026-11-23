@@ -76,5 +76,3 @@ export default Plugin.define({
     } catch (e) { console.error("video2md commands register failed", e) }
   },
 })
-EOF
-echo done

@@ -16,6 +16,6 @@
     "templates"
   ],
   "dependencies": {
-    "@opencode/plugin": "latest"
+    "@opencode/plugin": "^2.4.1"
   }
 }
