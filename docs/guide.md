@@ -169,11 +169,17 @@ Then run:
 /video2md:markdown input.webm
 ```
 
-## OpenCode bundle
+## OpenCode
 
-The repository ships an OpenCode bundle under `.opencode/` (skills, commands,
-agents, MCP config). Open the repo in OpenCode and the bundle loads
-automatically. Commands: `/latex`, `/markdown`. Skills: `reporter`,
+Install the plugin via CLI:
+
+```bash
+opencode plugin add farukerdem34/video2md
+```
+
+This registers the `video2md` MCP server (with `protocol: legacy`) plus skills,
+commands, and agents. Or open the repo in OpenCode and the `.opencode/` bundle
+loads automatically. Commands: `/latex`, `/markdown`. Skills: `reporter`,
 `latex-specialist`, `markdown-specialist`, `transcriber`.
 
 ## Development

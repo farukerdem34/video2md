@@ -35,7 +35,13 @@ Komutlar: `/video2md:latex input.mp4`, `/video2md:markdown input.webm`.
 
 ## OpenCode
 
-Bu depo `.opencode/` altında OpenCode paketi (skills, commands, agents, MCP yapılandırması) içerir. OpenCode'da açtığınızda paket otomatik yüklenir.
+Eklentiyi CLI ile kurun:
+
+```bash
+opencode plugin add farukerdem34/video2md
+```
+
+Bu komut `video2md` MCP sunucusunu ve skills, commands, agents'ı kaydeder. Ya da depoyu OpenCode'da açın; `.opencode/` paketi otomatik yüklenir.
 
 ## Belgeler
 
