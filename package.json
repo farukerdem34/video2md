@@ -1,0 +1,21 @@
+{
+  "name": "video2md",
+  "version": "0.2.0",
+  "description": "video2md OpenCode plugin: bundles the video2md MCP server, reporter skills, and latex/markdown commands.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "skills",
+    "commands",
+    "agents",
+    "prompts",
+    "templates"
+  ],
+  "dependencies": {
+    "@opencode/plugin": "latest"
+  }
+}
