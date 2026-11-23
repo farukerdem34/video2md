@@ -76,7 +76,7 @@ Published package:
 }
 ```
 
-Then ask Claude Code: "Write a summary report from /path/to/video.mp4 in Markdown."
+Then ask Claude Code: "Write a summary report from /path/to/video.mp4 (or .webm, .mkv, .mov, ...) in Markdown."
 The agent will call `get_media_info` and `transcribe`, then write the report.
 
 Report skeletons are available via the `get_report_template(format)` tool

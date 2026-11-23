@@ -20,6 +20,8 @@ mcp = MCPServer(
     version=__version__,
     instructions=(
         "Tools for inspecting and transcribing video/audio files. "
+        "Supports common formats via ffmpeg, including MP4, WebM, MKV, MOV, AVI, "
+        "MP3, WAV, M4A, OGG, FLAC and others. "
         "Use get_media_info first, then transcribe to obtain a timestamped transcript. "
         "For long files, transcribe auto-chunks; or pass start_seconds/end_seconds. "
         "Backends: mlx-whisper (macOS arm64), faster-whisper (cross-platform CPU), "

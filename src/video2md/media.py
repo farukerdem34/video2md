@@ -11,6 +11,37 @@ from typing import Any
 
 CACHE_DIR = Path.home() / ".cache" / "video2md"
 
+# Common media file extensions handled via ffmpeg/ffprobe. WebM is supported
+# alongside MP4/MKV/MOV/etc.; this set is advisory (we never reject a file by
+# extension, since ffmpeg is the source of truth).
+SUPPORTED_VIDEO_EXTENSIONS = {
+    ".mp4", ".m4v", ".mkv", ".mov", ".avi", ".webm", ".flv", ".wmv",
+    ".ogv", ".3gp", ".ts", ".mts", ".m2ts", ".vob",
+}
+SUPPORTED_AUDIO_EXTENSIONS = {
+    ".wav", ".mp3", ".m4a", ".aac", ".ogg", ".oga", ".opus", ".flac",
+    ".wma", ".weba", ".aiff", ".aif", ".alac",
+}
+SUPPORTED_EXTENSIONS = SUPPORTED_VIDEO_EXTENSIONS | SUPPORTED_AUDIO_EXTENSIONS
+SUPPORTED_MEDIA_EXTENSIONS = SUPPORTED_EXTENSIONS
+MEDIA_EXTENSIONS = SUPPORTED_EXTENSIONS
+VIDEO_EXTENSIONS = SUPPORTED_VIDEO_EXTENSIONS
+AUDIO_EXTENSIONS = SUPPORTED_AUDIO_EXTENSIONS
+
+
+def is_supported_media(path: str | Path) -> bool:
+    return Path(path).suffix.lower() in SUPPORTED_EXTENSIONS
+
+
+def is_supported_file(path: str | Path) -> bool:
+    return is_supported_media(path)
+
+
+def supports_extension(ext: str) -> bool:
+    if not ext.startswith("."):
+        ext = "." + ext
+    return ext.lower() in SUPPORTED_EXTENSIONS
+
 
 def _which(name: str) -> str:
     path = shutil.which(name)

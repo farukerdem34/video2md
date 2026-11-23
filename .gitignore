@@ -10,6 +10,8 @@ __pycache__/
 *.mov
 *.mkv
 *.avi
+*.webm
+*.weba
 *.mp3
 *.wav
 *.aiff
